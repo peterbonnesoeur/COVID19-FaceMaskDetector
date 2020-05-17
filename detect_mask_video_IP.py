@@ -14,9 +14,12 @@ import cv2
 import os
 import imagezmq
 
-image_hub1 = imagezmq.ImageHub(open_port='tcp://*:5558')
-image_hub2 = imagezmq.ImageHub(open_port='tcp://*:5555')
+import subprocess
 
+#completed = subprocess.run('python IP_cameras_client_side.py', shell=True)
+#print('returncode:', completed.returncode)
+
+image_hub = imagezmq.ImageHub()
 
 def detect_and_predict_mask(frame, faceNet, maskNet):
 	# grab the dimensions of the frame and then construct a blob
@@ -95,16 +98,10 @@ ap.add_argument("-m", "--model", type=str,
 	help="path to trained face mask detector model")
 ap.add_argument("-c", "--confidence", type=float, default=0.5,
 	help="minimum probability to filter weak detections")
-ap.add_argument("-d", "--devices",  nargs='+', help = "Cameras to use",
-    default=[0], type=str)
-ap.add_argument("-hu", "--hosts",  nargs='+', help = "host to use",
-    default=["tcp://localhost:5555"], type=str),
-ap.add_argument("-p", "--paths",  nargs='+', help = "paths to the IP cam",
-    default=["rtsp://10.153.3.159:8080///h264_ulaw.sdp"], type=str),
+ap.add_argument("-d", "--devices",  nargs='+', help = "Cameras connected to the computer",
+    default=[], type=int)
 
-
-
-
+ap.add_argument("-nc", "--number_cam", help="Number of IP or PI cam connected",default=0,type=int),
 args = vars(ap.parse_args())
 
 # load our serialized face detector model from disk
@@ -121,41 +118,40 @@ maskNet = load_model(args["model"])
 # initialize the video stream and allow the camera sensor to warm up
 print("[INFO] starting video stream...")
 #vs = VideoStream(src=0).start()
-vs=VideoStream(src=args["devices"][0]).start()
-time.sleep(2.0)
-
+vs = []
+for device in args["devices"]:
+	vs.append([VideoStream(src=device).start(), device])
+	time.sleep(2.0) #Warm up time for the camera
 # loop over the frames from the video stream
 while True:
 	# grab the frame from the threaded video stream and resize it
 	# to have a maximum width of 400 pixels
-	frame = vs.read()
-	print("here")
-	
-	frame = imutils.resize(frame, width=400)
-	print("here")
-	cam_id, frame2 = image_hub1.recv_image()
-	cam_id, frame3 = image_hub2.recv_image()
+	frames = []
+	window_names = []
  
-	print(len(frame2))
-	print("here")
-	frame3 = imutils.resize(frame3, width=400)
-	frame2 = imutils.resize(frame2, width=400)
-	print("here")
-	frames = [frame, frame2, frame3]
+	for v in vs :
+		frame = v[0].read()
+		frames.append(imutils.resize(frame, width=args["size"]))
+		window_names.append("Camera_"+str(v[1]))
+		
+	for camera in range(args["number_cam"]):
+		cam_id, frame = image_hub.recv_image()
+		frames.append(imutils.resize(frame, width=args["size"]))
+		window_names.append(str(cam_id))
+ 
+
 
  
-	print(frame.shape, frame2.shape)
+	print("here we are")
 	shift = 0
 	final_frame = []
  
-	window_names = ["1","2", "3"]
+	
  
 	for frame, window_name in zip(frames, window_names):
-		print("here2")
 		# detect faces in the frame and determine if they are wearing a
 		# face mask or not
 		(locs, preds) = detect_and_predict_mask(frame, faceNet, maskNet)
-		
 		# loop over the detected face locations and their corresponding
 		# locations
 		if len(final_frame) == 0:
@@ -191,12 +187,11 @@ while True:
 		
    
 
-	print("here3")
 	# show the output frame
 	#cv2.imshow("Frame", final_frame)
 	key = cv2.waitKey(1) & 0xFF
-	image_hub1.send_reply(b'OK')
-	image_hub2.send_reply(b'OK')
+	for camera in range(args["number_cam"]):
+		image_hub.send_reply(b'OK')
 
 	# if the `q` key was pressed, break from the loop
 	if key == ord("q"):

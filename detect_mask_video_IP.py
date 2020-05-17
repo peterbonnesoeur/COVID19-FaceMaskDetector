@@ -10,10 +10,27 @@ import cv2
 import os
 import imagezmq
 
-
-#completed = subprocess.run('python IP_cameras_client_side.py', shell=True)
-#print('returncode:', completed.returncode)
-
+def anonymity(image, blocks=3):
+	# divide the input image into NxN blocks
+	(h, w) = image.shape[:2]
+	xSteps = np.linspace(0, w, blocks + 1, dtype="int")
+	ySteps = np.linspace(0, h, blocks + 1, dtype="int")
+	# loop over the blocks in both the x and y direction
+ 
+	for i in range(1, len(ySteps)):
+		for j in range(1, len(xSteps)):
+			startX = xSteps[j - 1]
+			startY = ySteps[i - 1]
+			endX = xSteps[j]
+			endY = ySteps[i]
+			# Compute the mean of each ROI after our slicing of the faces.
+			#Those means will be the color of each individual blocks
+			roi = image[startY:endY, startX:endX]
+			#(B, G, R) = [int(x) for x in cv2.mean(roi)[:3]]
+			cv2.rectangle(image, (startX, startY), (endX, endY),
+				[int(x) for x in cv2.mean(roi)[:3]], -1)
+	# return the pixelated blurred image
+	return image
 
 def detect_and_predict_mask(frame, faceNet, maskNet, args):
 	# grab the dimensions of the frame and then construct a blob
@@ -126,8 +143,7 @@ def face_detector(args):
 
 	
 		print("here we are")
-		shift = 0
-		final_frame = []
+
 	
 		
 	
@@ -137,10 +153,6 @@ def face_detector(args):
 			(locs, preds) = detect_and_predict_mask(frame, faceNet, maskNet, args)
 			# loop over the detected face locations and their corresponding
 			# locations
-			if len(final_frame) == 0:
-				final_frame = frame
-			else:
-				final_frame = np.concatenate((final_frame, frame), axis = 1)
 	
 			cv2.namedWindow(window_name)
 			for (box, pred) in zip(locs, preds):
@@ -151,7 +163,6 @@ def face_detector(args):
 				startX += shift
 				endX += shift
 	
-				#shift += frame.shape[1]
 
 				# determine the class label and color we'll use to draw
 				# the bounding box and text
@@ -160,7 +171,10 @@ def face_detector(args):
 
 				# include the probability in the label
 				label = "{}: {:.2f}%".format(label, max(mask, withoutMask) * 100)
-
+				if args["anonymity"]:
+					face = frame[startY:endY, startX:endX]
+					face = anonymity(face)
+					frame[startY:endY, startX:endX] = face
 				# display the label and bounding box rectangle on the output
 				# frame
 				cv2.putText(frame, label, (startX, startY - 10),
@@ -197,18 +211,21 @@ if __name__ == "__main__":
     
 	ap = argparse.ArgumentParser()
 	ap.add_argument("-f", "--face", type=str,
-		default="face_detector",
-		help="path to face detector model directory")
+					default="face_detector",
+					help="path to face detector model directory")
 	ap.add_argument("-s", "--size", type=int,
-		default=400,
-		help="Size of the windows to process")
+					default=400,
+					help="Size of the windows to process")
+	ap.add_argument("-a", "--anonymity",
+					help="anonymity function for the user's victim", action='store_true')
+ 
 	ap.add_argument("-m", "--model", type=str,
-		default="mask_detector.model",
-		help="path to trained face mask detector model")
+					default="mask_detector.model",
+					help="path to trained face mask detector model")
 	ap.add_argument("-c", "--confidence", type=float, default=0.5,
-		help="minimum probability to filter weak detections")
+					help="minimum probability to filter weak detections")
 	ap.add_argument("-d", "--devices",  nargs='+', help = "Cameras connected to the computer",
-		default=[], type=int)
+					default=[], type=int)
 
  
 

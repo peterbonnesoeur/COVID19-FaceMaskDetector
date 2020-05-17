@@ -25,6 +25,8 @@ ap.add_argument("-ts", "--types", help="types of the camera [IP or PI cam]",
                 type =str,nargs="+" ,default = []),
 ap.add_argument("-ps", "--paths", help = "paths to the IP cam (for the PI cam, put whatever value, really)",
                 type= str, default=[]),
+ap.add_argument("-a", "--anonymity",
+		        help="anonymity function for the user's victim", action='store_true')
 
 args = vars(ap.parse_args())
 

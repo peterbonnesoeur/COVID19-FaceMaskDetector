@@ -38,7 +38,10 @@ The command should will be :
 python IP_cameras_client_side.py -t IP -p rtsp://10.153.3.159:8080///h264_ulaw.sd
 ´´´
 
-were the -t indicate the type of camera (in this case IP) and the -p indicates the port of the camera.
+Where:
+-t indicate the type of camera (in this case IP) 
+
+-p indicates the port of the camera.
 
 2 - To use Raspberry Pi camera modules, you need to run the following code on each of them (while they are connected to the same network as your computer).
 
@@ -48,7 +51,8 @@ The command is :
 python IP_cameras_client_side.py -t PI
 ```
 
-where -t indicates the type of camera (in this case PI)
+Where :
+-t indicates the type of camera (in this case PI)
 
 
 

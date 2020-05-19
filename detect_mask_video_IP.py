@@ -1,7 +1,7 @@
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.models import load_model
-from imutils.video import VideoStream
+from imutils.video import VideoStream, WebcamVideoStream
 import numpy as np
 import argparse
 import imutils
@@ -26,7 +26,6 @@ def anonymity(image, blocks=3):
 			# Compute the mean of each ROI after our slicing of the faces.
 			#Those means will be the color of each individual blocks
 			roi = image[startY:endY, startX:endX]
-			#(B, G, R) = [int(x) for x in cv2.mean(roi)[:3]]
 			cv2.rectangle(image, (startX, startY), (endX, endY),
 				[int(x) for x in cv2.mean(roi)[:3]], -1)
 	# return the pixelated blurred image
@@ -86,7 +85,6 @@ def detect_and_predict_mask(frame, faceNet, maskNet, args):
 		# for faster inference we'll make batch predictions on *all*
 		# faces at the same time rather than one-by-one predictions
 		# in the above `for` loop
-
 		preds=maskNet.predict(np.array(faces))
 
 	print(len(faces),"_",len(preds), len(locs))
@@ -113,14 +111,13 @@ def face_detector(args):
 
 	# initialize the video stream and allow the camera sensor to warm up
 	print("[INFO] starting video stream...")
-	#vs = VideoStream(src=0).start()
  
-	#if args["threading"] ==False:
 	vs = []
 	for device in args["devices"]:
 		vs.append([VideoStream(src=device).start(), device])
 		time.sleep(2.0) #Warm up time for the camera
 
+	print(len(vs))
 	# loop over the frames from the video stream
 	while True:
 		# grab the frame from the threaded video stream and resize it
@@ -138,15 +135,11 @@ def face_detector(args):
 			cam_id, frame = image_hub.recv_image()
 			frames.append(imutils.resize(frame, width=args["size"]))
 			window_names.append(str(cam_id))
-		print("here2")
-
-
-	
-		print("here we are")
 
 	
 		
-	
+		shift = 0
+
 		for frame, window_name in zip(frames, window_names):
 			# detect faces in the frame and determine if they are wearing a
 			# face mask or not
@@ -214,7 +207,7 @@ if __name__ == "__main__":
 					default="face_detector",
 					help="path to face detector model directory")
 	ap.add_argument("-s", "--size", type=int,
-					default=400,
+					default=300,
 					help="Size of the windows to process")
 	ap.add_argument("-a", "--anonymity",
 					help="anonymity function for the user's victim", action='store_true')

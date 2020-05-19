@@ -4,6 +4,8 @@ This github inspired by the work of Adrian Rosebrock of [Pyimagesearch](https://
 
 The current project offers a multi camera proposition to have a detection over several point of view.
 
+![](https://media.giphy.com/media/lQJZDVN4wX8HuAZnke/giphy.gif)
+
 # Install
 
 Python 3 is required. Python 2 is not supported.
@@ -40,9 +42,9 @@ python IP_cameras_client_side.py -t IP -p rtsp://10.153.3.159:8080///h264_ulaw.s
 
 Where:
 
-* t indicate the type of camera (in this case IP) 
+* -t indicate the type of camera (in this case IP) 
 
- *p indicates the port of the camera.
+* -p indicates the port of the camera.
 
 2 - To use Raspberry Pi camera modules, you need to run the following code on each of them (while they are connected to the same network as your computer).
 
@@ -53,7 +55,7 @@ python IP_cameras_client_side.py -t PI
 ```
 
 Where :
-* t indicates the type of camera (in this case PI)
+* -t indicates the type of camera (in this case PI)
 
 
 
@@ -67,15 +69,15 @@ python detect_mask_video_IP.py -c 0.5  -s 500 -d 0 1 -a -nc 1
 
 Where :
 
-* c is the minimum probability to filter weak detections
+* -c is the minimum probability to filter weak detections
 
-* s is the width of the windows 
+* -s is the width of the windows 
 
-* d is the cameras connected physically to your device (in this case, the camera 0 and 1 were used)
+* -d is the cameras connected physically to your device (in this case, the camera 0 and 1 were used)
 
-* nc is the number of both IP and raspberry pie camera that you have running on the same network
+* -nc is the number of both IP and raspberry pie camera that you have running on the same network
 
-*a is an option to hide the face of the individuals (let's protect our privacy, at least a bit).
+* - a is an option to hide the face of the individuals (let's protect our privacy, at least a bit).
 
 For those who have been reading until the end, if you do not remember what each parameter do, just add --help at the end of your commands.
 

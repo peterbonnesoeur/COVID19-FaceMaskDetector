@@ -23,26 +23,8 @@ The particularity of this code compared to the one available at PyimageSearch is
 - **detect_mask_video_IP.py**
 
 This function runs the neural network on your cameras coming from the computer, the IP cameras and the raspberry pi.
+
 Disclaimer: In case you are using the Rapsberry Pi and IP cameras, the previous script should be running on each of the devices FIRST.
-
-The command should be : 
-
-´´´sh
-python detect_mask_video_IP.py -c 0.5  -s 500 -d 0 1 -a -nc 1
-´´´
-
-Where :
--c is the minimum probability to filter weak detections
--s is the width of the windows 
--d is the cameras connected physically to your device (in this case, the camera 0 and 1 were used)
--nc is the number of both IP and raspberry pie camera that you have running on the same network
--a is an option to hide the face of the individuals (let's protect our privacy, at least a bit).
-
-For those who have been reading until the end, if you do not remember what each parameter do, just add --help at the end of your commands.
-
-
-
-
 
 
 # Camera IP, Raspberry Pi Camera
@@ -62,14 +44,35 @@ were the -t indicate the type of camera (in this case IP) and the -p indicates t
 
 The command is :
 
-´´´sh
-python IP_cameras_client_side.py -t PI ´´´
+```sh
+python IP_cameras_client_side.py -t PI
+```
 
 where -t indicates the type of camera (in this case PI)
 
 
 
-# One command to do it all
+# Detection part
+
+The command should be : 
+
+```sh
+python detect_mask_video_IP.py -c 0.5  -s 500 -d 0 1 -a -nc 1
+```
+
+Where :
+
+-c is the minimum probability to filter weak detections
+
+-s is the width of the windows 
+
+-d is the cameras connected physically to your device (in this case, the camera 0 and 1 were used)
+
+-nc is the number of both IP and raspberry pie camera that you have running on the same network
+
+-a is an option to hide the face of the individuals (let's protect our privacy, at least a bit).
+
+For those who have been reading until the end, if you do not remember what each parameter do, just add --help at the end of your commands.
 
 
 # Training

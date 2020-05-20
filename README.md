@@ -28,10 +28,12 @@ This function runs the neural network on your cameras coming from the computer, 
 
 Disclaimer: In case you are using the Rapsberry Pi and IP cameras, the previous script should be running on each of the devices FIRST.
 
+Also, if you just want to test the detection program without IP cameras, you just need to rum this program with *-nc  0*
+
 
 # Camera IP, Raspberry Pi Camera
 
-1 - To use IP cameras, you need to run the following script for each camera on your computer while replacing the IP address (They should be on the same network as your computer).
+**1 -** To use IP cameras, you need to run the following script for each camera on your computer while replacing the IP address (They should be on the same network as your computer).
 In order to test the IP camera implementation without owning any IP camera, you can install an application such as [IP Webcam](https://play.google.com/store/apps/details?id=com.pas.webcam&hl=en) on your phone. 
 
 The command should will be : 
@@ -42,11 +44,11 @@ python IP_cameras_client_side.py -t IP -p rtsp://10.153.3.159:8080///h264_ulaw.s
 
 Where:
 
-* -t indicate the type of camera (in this case IP) 
+* **-t** indicate the type of camera (in this case IP) 
 
-* -p indicates the port of the camera.
+* **-p** indicates the port of the camera.
 
-2 - To use Raspberry Pi camera modules, you need to run the following code on each of them (while they are connected to the same network as your computer).
+**2 -** To use Raspberry Pi camera modules, you need to run the following code on each of them (while they are connected to the same network as your computer).
 
 The command is :
 
@@ -55,7 +57,7 @@ python IP_cameras_client_side.py -t PI
 ```
 
 Where :
-* -t indicates the type of camera (in this case PI)
+* **-t** indicates the type of camera (in this case PI)
 
 
 
@@ -69,15 +71,20 @@ python detect_mask_video_IP.py -c 0.5  -s 500 -d 0 1 -a -nc 1
 
 Where :
 
-* -c is the minimum probability to filter weak detections
+* **-c** is the minimum probability to filter weak detections
 
-* -s is the width of the windows 
+* **-s** is the width of the windows 
 
-* -d is the cameras connected physically to your device (in this case, the camera 0 and 1 were used)
+* **-d** is the cameras connected physically to your device (in this case, the camera 0 and 1 were used)
 
-* -nc is the number of both IP and raspberry pie camera that you have running on the same network
+* **-nc** is the number of both IP and raspberry pie camera that you have running on the same network. If you want to run it without any IP camera, and just your webcam, put *-nc 0*
 
-* - a is an option to hide the face of the individuals (let's protect our privacy, at least a bit).
+* **-a** is an option to hide the face of the individuals (let's protect our privacy, at least a bit).
+
+![](ressources/brad_pit.png)
+    He might be Brad Pit, or not. But you don't care, he just doesn't have a mask on !
+
+
 
 For those who have been reading until the end, if you do not remember what each parameter do, just add --help at the end of your commands.
 

@@ -114,7 +114,9 @@ def face_detector(args):
  
 	vs = []
 	for device in args["devices"]:
-		vs.append([VideoStream(src=device).start(), device])
+		v = VideoStream(src=device)
+		v.start()
+		vs.append([v, device])
 		time.sleep(2.0) #Warm up time for the camera
 
 	print(len(vs))
@@ -138,7 +140,7 @@ def face_detector(args):
 
 	
 		
-		shift = 0
+
 
 		for frame, window_name in zip(frames, window_names):
 			# detect faces in the frame and determine if they are wearing a
@@ -153,9 +155,7 @@ def face_detector(args):
 				(startX, startY, endX, endY) = box
 				(mask, withoutMask) = pred
 				
-				startX += shift
-				endX += shift
-	
+
 
 				# determine the class label and color we'll use to draw
 				# the bounding box and text
